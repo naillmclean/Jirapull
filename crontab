@@ -1,0 +1,4 @@
+# crontab
+# m h dom mon dow command
+*/10 * * * * root /usr/local/bin/python /home/qaautoapp/jiraimportapp.py &> /var/log/cron.log 2>&1
+# required blank row

@@ -52,14 +52,14 @@ RUN cd /usr/local/bin \
 # Install Jira Library
 RUN pip install jira
 
-# Install qaautoapp
-RUN mkdir -p /home/qaautoapp
-COPY jiraimportapp.py /home/qaautoapp
-COPY jiraquerysettings.py /home/qaautoapp
-COPY jirasettings.py /home/qaautoapp
-RUN chmod +x /home/qaautoapp/jiraimportapp.py \
-    && chmod +x /home/qaautoapp/jirasettings.py \
-    && chmod +x /home/qaautoapp/jiraquerysettings.py
+# Install jirapullapp
+RUN mkdir -p /home/jirapullapp
+COPY jirapull.py /home/jirapullapp
+COPY jiraquerysettings.py /home/jirapullapp
+COPY jirasettings.py /home/jirapullapp
+RUN chmod +x /home/jirapullapp/jirapull.py \
+    && chmod +x /home/jirapullapp/jirasettings.py \
+    && chmod +x /home/jirapullapp/jiraquerysettings.py
 
 # Install cron and rsyslog
 RUN apt-get update && apt-get -y install cron rsyslog

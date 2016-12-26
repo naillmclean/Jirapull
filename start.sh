@@ -2,4 +2,4 @@
 # docker cmd file
 service rsyslog start
 service cron start
-/bin/bash
+tail -f /dev/null

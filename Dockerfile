@@ -76,7 +76,7 @@ RUN touch /var/log/cron.log \
     && sed -i '/session required pam_loginuid.so/c\#session required pam_loginuid.so' /etc/pam.d/cron
 
 
-#  Run the command on container startup
+#  add the the container startup script
 ADD start.sh /usr/local/bin/start.sh
 RUN chmod +x /usr/local/bin/start.sh 
 
@@ -85,4 +85,3 @@ VOLUME ["/usr/local/src"]
 
 #CMD ["/bin/bash"]
 CMD bash -C '/usr/local/bin/start.sh';'bash'
-

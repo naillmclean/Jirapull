@@ -21,5 +21,5 @@ Login credentials to a Jira environment
 5. Build the Docker Image form the Dockerfile
 `docker build -t jirapull .`
 5. Run the container where jirapullname is the name you want to give tue container. 
-`docker run -dit --name jirapullname:v1 jirapull`
+`docker run -dit --name jirapullname jirapull`
 6. After the cron time (default `10 minutes`) the csv output file will now be avaiable

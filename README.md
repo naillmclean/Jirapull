@@ -22,4 +22,4 @@ Login credentials to a Jira environment
 `docker build -t jirapull .`
 5. Run the container where jirapullname is the name you want to give tue container. 
 `docker run -dit --name jirapullname jirapull`
-6. After the cron time (default `10 minutes`) the csv output file will now be avaiable
+6. After the cron time (default `10 minutes`) the csv output file will now be available

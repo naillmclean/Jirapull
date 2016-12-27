@@ -1,0 +1,6 @@
+##################
+## Jirapull ignore
+##################
+
+#Ignore the settings file
+jirasettings.py

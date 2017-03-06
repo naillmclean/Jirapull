@@ -1,5 +1,5 @@
 FROM buildpack-deps:jessie
-
+MAINTAINER Naill Mclean <naill_mclean@hotmail.com>
 # remove several traces of debian python
 RUN apt-get purge -y python.*
 
@@ -25,7 +25,6 @@ RUN set -ex \
 	&& mkdir -p /usr/src/python \
 	&& tar -xJC /usr/src/python --strip-components=1 -f python.tar.xz \
 	&& rm python.tar.xz \
-	\
 	&& cd /usr/src/python \
 	&& ./configure --enable-shared --enable-unicode=ucs4 \
 	&& make -j$(nproc) \
@@ -49,36 +48,49 @@ RUN cd /usr/local/bin \
 	&& ln -s python3 python \
 	&& ln -s python3-config python-config
 
-# Install Jira Library
-RUN pip install jira
+# Install Python Jira
+RUN pip install jira schedule
 
 # Install jirapullapp
 RUN mkdir -p /home/jirapullapp
 COPY jirapull.py /home/jirapullapp
-COPY jiraquerysettings.py /home/jirapullapp
-COPY jirasettings.py /home/jirapullapp
+COPY jirapull_db.py /home/jirapullapp
+COPY jiraquerysettings /home/jirapullapp
+COPY jirasettings /home/jirapullapp
+COPY oraclesettings /home/jirapullapp
+COPY jirapull_output.py /home/jirapullapp
+COPY jirapull_encoding.py /home/jirapullapp
+
 RUN chmod +x /home/jirapullapp/jirapull.py \
-    && chmod +x /home/jirapullapp/jirasettings.py \
-    && chmod +x /home/jirapullapp/jiraquerysettings.py
-
-# Install cron and rsyslog
-RUN apt-get update && apt-get -y install cron rsyslog
-
-# COPY crontab file in the cron directory
-COPY crontab /etc/cron.d/cust-cron
-
-# Give execution rights on the cron job
-# and create log file to be able to run tail
-RUN touch /var/log/cron.log \
-    && chmod 0644 /etc/cron.d/cust-cron \
-  #  && crontab /etc/cron.d/cust-cron \
-	&& sed -i -e 's/#cron./cron./g' /etc/rsyslog.conf \
-    && sed -i '/session required pam_loginuid.so/c\#session required pam_loginuid.so' /etc/pam.d/cron
-
+    && chmod +x /home/jirapullapp/jirapull_output.py \
+	&& chmod +x /home/jirapullapp/jirapull_encoding.py \
+    && chmod +x /home/jirapullapp/jirapull_db.py \
+	&& touch /home/jirapullapp/__init__.py \
+	&& apt-get update
 
 #  add the the container startup script
 ADD start.sh /usr/local/bin/start.sh
 RUN chmod +x /usr/local/bin/start.sh 
+
+# Optional add the Oracle Client, Oracle rpm files need to be downloaded and added to dockerfile folder
+# download from [here](http://www.oracle.com/technetwork/topics/linuxx86-64soft-092277.html) 
+
+ADD . /tmp/
+COPY ./oracle* /tmp/
+RUN if [ -f /tmp/oracle*basic*.rpm ] ; then apt-get -y install libaio1 ; else echo "No Oracle rpm files, libaio1 install skipped" ; fi \
+	&& if [ -f /tmp/oracle*basic*.rpm ] ; then apt-get -y install alien ; else echo "No Oracle rpm files, alien install skipped" ; fi \
+	&& if [ -f /tmp/oracle*basic*.rpm ] ; then alien -k -d -i /tmp/*.rpm ; else echo "No Oracle rpm files, Oracle Client install skipped" ; fi \
+	&& mkdir /usr/lib/oracle/12.1/client64/network/admin -p
+	
+COPY ./tnsnames.ora /usr/lib/oracle/12.1/client64/network/admin/tnsnames.ora
+
+ENV ORACLE_HOME=/usr/lib/oracle/12.1/client64
+ENV PATH=$PATH:$ORACLE_HOME/bin
+ENV LD_LIBRARY_PATH=$ORACLE_HOME/lib
+ENV TNS_ADMIN=$ORACLE_HOME/network/admin
+
+RUN pip install cx_Oracle \
+	&& apt-get autoclean
 
 # expose src folder to allow mapping to host machine
 VOLUME ["/usr/local/src"]

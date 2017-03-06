@@ -3,4 +3,10 @@
 ##################
 
 #Ignore the settings file
-jirasettings.py
+jirasettings
+oraclesettings
+jiraquerysettings
+
+
+#Ignore the Oracle rpm files, required per the license
+oracle*.rpm

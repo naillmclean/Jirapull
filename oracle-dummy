@@ -1,0 +1,3 @@
+# Dont delete
+# This is required to ensure the docker build does not fail if the oracle rpm files are missing
+# Oracle don't allow then files to be bundled
